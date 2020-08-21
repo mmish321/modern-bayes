@@ -32,8 +32,13 @@ I used the command, read.table, to load the data set into R and make it a data f
 
 ```{r load-data, tidy = TRUE, message = FALSE}
 library(tidyverse) #load in tidyverse package
-data_file_url = "https://raw.githubusercontent.com/resteorts/modern-bayes/master/homeworks/homework-1/data/rnf6080.dat"
-rain.df <- read.table(file = data_file_url, header = FALSE, sep = "") #read in data
+urlRemote  <- "https://raw.githubusercontent.com/"
+pathGithub <- "resteorts/modern-bayes/master/homeworks/homework-1/data/"
+fileName   <- "rnf6080.dat"
+rain.df <-paste0(urlRemote, pathGithub, fileName) %>%
+   read.table(header = FALSE, sep="")
+#way of formatting this was found at:
+#https://stackoverflow.com/questions/52640061/wrap-long-url-line-in-r-markdown
 ```
 
 b. How many rows and columns does \texttt{rain.df} have?  How do you know?  (If there are not 5070 rows and 27 columns, you did something wrong in the first part of the problem.)
@@ -94,7 +99,7 @@ ggplot(data=rain.df, mapping = aes(x = daily)) + #create histogram with specifie
 
 i. Explain why that histogram above cannot possibly be right.
 
-The histogram above cannot possibly be right because you cannot have a negative daily rainfall amount. You should only have amount that are greater than or equal to 0. 
+The histogram above cannot possibly be right because you cannot have a negative daily rainfall amount. You should only have amounts that are greater than or equal to 0. 
 
 j. Give the command you would use to fix the data frame.
 In order to fix the data frame, we should replace all the negative values (-999) and such with NA. If we were to replace the negative values with 0, we could skew the distribution.
@@ -129,8 +134,10 @@ sort(x)
 sum(x)
 ```
 The first line of code sets x as a vector with the values "5", "12", and "7".
-The second line of code returns "7" as the max instead of 12 as you might expect because the values are not as integers but as strings, so now R compares them lexicographically, in which "7" is the greatest.
+The second line of code returns "7" as the max instead of 12 as you might expect because the values are not of type int but of type "character", so now R compares them lexicographically, in which "7" is the greatest.
+
 For sort(x), again because the values are strings, R will order them in lexicographic order in which "12" is the smallest, and "7" is the greatest.
+
 For sum(x), sum only excepts numeric or complex or logical vector as an argument, and since our vector x, is not, it throws an invalid 'type' error. 
 
 b. For the next two commands, either explain their results, or why they

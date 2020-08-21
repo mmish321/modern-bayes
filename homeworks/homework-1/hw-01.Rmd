@@ -58,7 +58,7 @@ d. What command would you use to get the value at row 2, column 4? What is the v
 The command I used to get the value at row 2, column 4 is `rain.df[row, col]` where in this case x and y are 2 and 4 . The value is 0 based on the output.
 
 ```{r value-at-2-4}
-rain.df[2, 4]
+rain.df[2, 4] #obtain the value at row 2, and 4 using bracket notation
 ```
 
 e. What command would you use to display the whole second row?  What is the content of that row?  
@@ -72,8 +72,8 @@ rain.df[2,] #display the second row by only providing a row argument
 ```
 
 f.  What does the following command do?
-```
-names(rain.df) <- c("year","month","day",seq(0,23))
+```{r change-names}
+names(rain.df) <- c("year","month","day",seq(0,23)) #change the column names to proper descriptors
 ```
 This command sets the column names of rain.df, to be (going from left to right), 'year', 'month', 'day', and then 0-23 with 0 representing the time 12AM - 1AM, 1 representing 1AM-2AM and etc, all the way to 23 where 23 represents 11PM to 12AM.
 So instead of the generic column name of V1- V27, now, the column names are more descriptive of what values are stored in each respective column. 
@@ -81,16 +81,15 @@ The c() command takes the arguments and forms them into a vector which is then s
 
 g.  Create a new column called \texttt{daily}, which is the sum of the 24 hourly columns.
 ```{r new-column}
-names(rain.df) <- c("year","month","day",seq(0,23)) #change the column names to proper descriptors
 rain.df <- cbind(rain.df, daily = rowSums(rain.df[4:27])) # add new column daily 
 ```
 h. Give the command you would use to create a histogram of the daily rainfall amounts.  Please make sure to attach your figures in your .pdf report.
 
 ```{r generate-histogram, message = FALSE, results = "hide"}
-ggplot(data=rain.df, mapping = aes(x = daily)) +
+ggplot(data=rain.df, mapping = aes(x = daily)) + #create histogram with specified data being daily
   geom_histogram() + 
   labs(title = "Distribution of Daily Rainfall for Location in Canada(1960-80)",
-       x = "Daily Rainfall Amount", y = "Frequency")
+       x = "Daily Rainfall Amount", y = "Frequency") #set histogram labels
 ```
 
 i. Explain why that histogram above cannot possibly be right.
@@ -99,7 +98,8 @@ The histogram above cannot possibly be right because you cannot have a negative 
 
 j. Give the command you would use to fix the data frame.
 In order to fix the data frame, we should replace all the negative values (-999) and such with NA. If we were to replace the negative values with 0, we could skew the distribution.
-The command below
+The commands below find the values that are less than 0 and replace them with NA.
+The second command then recalculates the daily column as now the results should be different with no negative daily rain amounts.
 ```{r fix-the-data-frame}
 rain.df[rain.df < 0] <- NA #replace negative values to be NA
 rain.df$daily<-rowSums(rain.df[4:27]) #re-calculate daily column
@@ -109,11 +109,13 @@ k. Create a corrected histogram and again include it as part of your submitted r
 more reasonable than the previous histogram.
 
 ```{r corrected-histogram, message = FALSE, warning = FALSE}
-ggplot(data=rain.df, mapping = aes(x = daily)) +
+ggplot(data=rain.df, mapping = aes(x = daily)) + #same command as above, but daily is different
   geom_histogram() + 
   labs(title = "Corrected Distribution of Daily Rainfall for Location in Canada (1960-80)", 
        x = "Daily Rainfall Amount", y = "Frequency")
 ```
+
+This corrected histogram is more reasonable because it doesn't have any negative values, instead, all the daily rainfall amounts are greater than or equal to zero. This is more reasonable, and makes more sense to the viewer, because people equate 0 rainfall as no rain. Having negative rainfall values would confuse most as to what that means. Since this histogram doesn't include those negative values, it's more reasonable and easier to interpret.
 
 ***Data types***
 
@@ -159,6 +161,7 @@ b.) Given an example of why making your code reproducible is important for you t
 Making code in this class reproducible, especially in this virtual environment, is to ensure that the code written is actually producing the results you are submitting. For example, someone could easily submit another person's PDF as their own if no code is required to be submitted. But because it is required, a TA/Professor could check the code, run the code, and see if the generated PDF matches what the person submitted. If the generated results from the code match what the person submitted, it's most likely they produced the work on their own. If the results don't match, the person most likely didn't do the work to produce the results. Going forward, having reproducible results is important for integrity and for transparency not only in academia but also in industry as well.
 
 c.) On a scale of 1 (easy) -- 10 (hard), how hard was this assignment. If this assignment was hard ($>5$), please state in one sentence what you struggled with. 
+
 This assignment is a 6 as I found it difficult to remember some of the functions/methods in R which slowed me down a bit in completing this assignment.
 
 

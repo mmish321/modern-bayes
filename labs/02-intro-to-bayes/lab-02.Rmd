@@ -57,14 +57,22 @@ You have a rough sketch of what you should do for this part of the assignment. T
 ### Bernoulli LH Function ###
 # Input: obs.data, theta
 # Output: bernoulli likelihood
+theta = c(0.01, 0.1) #example that the TA used to build the function, those are two arbitrary values
+N = lengths(obs.data)
+X = sum(obs.data)
 
 
 ### Plot LH for a grid of theta values ###
 # Create the grid #
 # Store the LH values
 # Create the Plot
+
 ```
 
-
+# Task 4
+1. Write a function with,
+input: prrio parameters a, b, and the observed data.
+output: parameters of the Beta posterior distribution of theta
+takes as its inputs prior parameters a and b for the Beta-Bernoulli model and the observed data, and produces the posterior parameters you need for the model
 
 

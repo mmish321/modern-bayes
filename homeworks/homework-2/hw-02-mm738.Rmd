@@ -1,5 +1,5 @@
 ---
-title: 'Homework 2'
+title: 'Homework 2 se'
 author: "STA 360: Assignment 2, Fall 2020"
 date: "Due Friday August 28, 5 PM Standard Eastern Time"
 output: pdf_document

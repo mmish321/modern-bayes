@@ -1,5 +1,5 @@
 ---
-title: 'Homework 2 se'
+title: 'Homework 2'
 author: "STA 360: Assignment 2, Fall 2020"
 date: "Due Friday August 28, 5 PM Standard Eastern Time"
 output: pdf_document
@@ -85,4 +85,4 @@ labs(title = "Likelihood, Posterior given Non-Informative/Informative Prior",
   ) 
 ```
 
-We can see that the informative prior is slightly more to the right than the non-informative prior. Having an informative prior shifted the posterior distribution so the value of theta it's centered about is greater than the non-informative prior posterior distribution. We can also see that the non-informative distribution is taller than the informative,
+We can see that the informative prior is slightly more to the right than the non-informative prior. Having an informative prior shifted the posterior distribution so the value of theta it's centered about is greater than the non-informative prior posterior distribution. We can also see that the non-informative distribution is taller than the informative

@@ -98,8 +98,8 @@ labs(title = "Likelihood, Posterior, Informative Prior",
 We can see that the informative prior is slightly more to the right than the non-informative prior. Having an informative prior shifted the posterior distribution so the value of theta it's centered about is greater than the non-informative prior posterior distribution. We can also see that the non-informative distribution is taller than the informative
 
 # The Exponential-Gamma Model
-a.  
-![Handwritten Derviation](2aDerviation.png)
+a. 
+    ![](2aDerviation.png)
 b. The posterior distribution is a proper density distribution function because it is an actual probability distribution, a Gamma distribution. Improper distributions are functions that do not integrate to 1. In this case, the Gamma distribution with parameters (a + 1, b + x) integrates to 1 with respect to theta.
 
 c.

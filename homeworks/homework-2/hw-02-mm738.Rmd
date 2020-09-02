@@ -2,7 +2,7 @@
 title: 'Homework 2'
 author: "STA 360: Assignment 2, Fall 2020"
 date: "Due Friday August 28, 5 PM Standard Eastern Time"
-output: pdf_document
+output: html_document
 ---
 ```{r set-up, message = FALSE}
 library(tidyverse) #load in tidyverse package
@@ -24,7 +24,7 @@ bernLH <- function(obs.data, theta){
 }
 
 # Plot LH for a grid of theta values
-# Create the grid #
+# Create the grid 
 theta.sim <- seq(from = 0, to = 1, length.out = 1000)
 # Store the LH values
 sim.LH <- bernLH(obs.data, theta = theta.sim)

@@ -34,7 +34,7 @@ ggplot(df, aes(theta.sim)) +
   geom_line(aes(y=sim.LH)) +
 labs(title = "Likelihood Profile",
        y = "Likelihood",
-       x = "Simulate Support" ) +
+       x = "Simulated Support" ) +
     theme(
     panel.grid.major = element_blank(), #erase the grid lines for easier view
     panel.grid.minor = element_blank(),
@@ -74,7 +74,8 @@ posterior.informative <- dbeta(theta.sim,
                                parameters.informative[2])
 
 #Create data frame with the values we plan on plotting
-df<- data.frame(theta.sim, non.informative.prior, informative.prior, sim.LH)
+df<- data.frame(theta.sim, sim.LH, non.informative.prior, informative.prior,
+                posterior.informative, posterior.non.informative)
 #Create Graph for Non-Informative
 ggplot(df, aes(theta.sim)) +  #theta.sim is our x values
   geom_line(aes(y=sim.LH, color="Likelihood")) + #likelihood as y
@@ -112,7 +113,9 @@ labs(title = "Likelihood, Posterior, Informative Prior",
     panel.grid.minor = element_blank(),
   ) 
 ```
-Here we can see that the "non-informative" prior is a uniform distribution and ironically it's pretty informative as it's able to shift the posterior to the right as well as making the posterior distribution much more narrow as compared to the "informative" prior's posterior. The informative prior's posterior is centered more to the left and is wider compared to the non-informative posterior. You can see the effects of the prior on the posterior's shape from these two graphs.
+  
+
+Here we can see that the "non-informative" prior is a uniform distribution and ironically it's pretty informative as it's able to shift the posterior more to the right as well as making the posterior distribution much more narrow as compared to the "informative" prior's posterior. The informative prior's posterior is centered more to the left and is wider compared to the non-informative posterior. The informative posterior is also not as tall as the non-informative posterior, with the peak at a density between 20-30 while the non-informative posterior's peak is at a density between 30 and 40. 
 
 # The Exponential-Gamma Model
 a. 
@@ -123,20 +126,17 @@ c.
 ```{r create-prior-posterior}
 #Create Vector of Data Provided from question
 q2.obs.data <- c(20.9, 69.7, 3.6, 21.8, 21.4, 0.4, 6.7, 10.0) 
-#Generate theta values
-q2.theta <- seq(from = 0, to = 1, length.out = 1000)
 #Sum the observation values
 x <-sum(q2.obs.data)
-
 #Get prior using gamma distribution
-q2.prior <- dgamma(x = q2.theta, 0.1, rate = 1.0)
+q2.prior <- dgamma(x = theta.sim, 0.1, rate = 1.0)
 #Get Posterior using Gamma distribution with derived parameters 
-q2.posterior <-dgamma(x = q2.theta, shape = 0.1 + length(q2.obs.data), 
+q2.posterior <-dgamma(x = theta.sim, shape = 0.1 + length(q2.obs.data), 
                       rate = 1.0+x)
 #Create Data Frame for Plotting Purposes
-df2<-data.frame(q2.theta, q2.prior, q2.posterior)
+df2<-data.frame(theta.sim, q2.prior, q2.posterior)
 #Create Graph with both Prior and Posterior
-ggplot(df2, aes(x = q2.theta)) + 
+ggplot(df2, aes(x = theta.sim)) + 
   geom_line(aes(y=q2.prior, color="Prior")) + #graph the prior
   geom_line(aes(y=q2.posterior, #graph the posterior
                 color= "Posterior")) +  
@@ -150,13 +150,14 @@ labs(title = "Posterior and Prior",
   ylim(0,30) #set limitation on y-axis for better view
 ```
 
-d. An application where an exponential model would be reasonable would be using to model the time between events such as the time until the next call at a call or the amount of time a storekeeper must wait before the next customer comes. The events must be "memoryless", for the exponential distribution to be a reasonable choice. The time between events do not depend on how much time has elapsed already. 
-So a situation that would be inappropriate for the exponential distribution to be used would be a situation where the variable does depend on how much time has elapsed. For example, modeling the lifetime of a car engine, X, with X being how many miles can be driven before the engine breaks down or how long till the engine breaks down. Here, by intuition, the longer you have driven the car, the more miles and time spent using the engine, the more likely an engine will break down so an engine that has been used for 6 years and has driven 100,000 miles has a lower X than an engine that has been used for a month and has only driven 500 miles. Here, the probability that the engine will break is not independent of the fact that it hasn't failed for 3 months of use or any unit of time.
+d. An application where an exponential model would be reasonable would be using to model the time between events such as the time until the next call at a call center or the amount of time a storekeeper must wait before the next customer comes. The events must be "memoryless", for the exponential distribution to be a reasonable choice. The time between events do not depend on how much time has elapsed already. 
+So a situation that would be inappropriate for the exponential distribution to be used would be a situation where the variable does depend on how much time has elapsed. For example, modeling the lifetime of a car engine, X, with X being how many miles can be driven before the engine breaks down or how long till the engine breaks down. Here, by intuition, the longer you have driven the car, the more miles and time spent using the engine, the more likely an engine will break down so an engine that has been used for 6 years and has driven 100,000 miles will have a lower X than an engine that has been only used for a month and has only driven 500 miles. Here, the probability that the engine will break down is not independent of the fact that it hasn't failed for 3 months of use or any unit of time.
 
 # Priors, Posteriors, Predictive Distributions
+a. Identify a class of conjugate prior densities for theta.  
 
-a.Identify a class of conjugate prior densities for theta.
-A class of conjugate prior densities that we can choose is the Galenshore distribution. So we can establish our prior as Galenshore with parameters c and d.
+A class of conjugate prior densities that we can choose is the Galenshore distribution. So we can establish our prior as Galenshore with parameters c and d: Galenshore(c,d).
+
 ```{r Galenshore-distribution-plots}
 galenshore <-function(y, a, theta){ #create galenshore function
   return ((2/gamma(a))*((theta^(2*a)) * (y^(2*a-1)) *exp(-theta^2*y^2))) 
@@ -175,18 +176,13 @@ ggplot(df3, aes(x = g.sim)) +
   geom_line(aes(y=ex.3, color="alpha = 4, theta = 1"))+  
   geom_line(aes(y=ex.4, color="alpha = 3, theta = 6"))+ 
   scale_color_manual(name = "Distributions", 
-     breaks = c("alpha = 1, theta = 1",
-                "alpha = 1, theta = 4",
-                "alpha = 4, theta = 1",
-                "alpha = 3, theta = 6"),
+     breaks = c("alpha = 1, theta = 1","alpha = 1, theta = 4",
+                "alpha = 4, theta = 1","alpha = 3, theta = 6"),
      values = c("red", "green", "blue", "purple"))+ #set colors
-labs(title = "Galenshore Distributions",
-       y = "Density",
-       x = "Y" ) #set labels
+labs(title = "Galenshore Distributions", y = "Density", x = "Y" ) #set labels
 ```
-
-
-b.Find Posterior Distribution
-
-
-
+  
+![](3b.png)   
+![](3c.png)
+![](3d.png) 
+![](3e.png)

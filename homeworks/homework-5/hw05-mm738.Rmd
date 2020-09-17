@@ -1,0 +1,76 @@
+---
+title: 'Homework 5'
+author: "STA 360: Assignment 5, Fall 2020"
+date: "Due Friday September 18, 5 PM Standard Eastern Time"
+output: pdf_document
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+set.seed(1)
+```
+
+# Hoff Exercise 3.12
+a.  
+    ![](parta.png)  
+b.  
+    ![](partb.png)  
+c.  
+    ![](partc.png)  
+
+
+# Lab Component
+
+a. Task 4
+```{r task-4, echo=TRUE}
+#Code taken from Professor Steort's Lab 5 RMD file
+
+# grid of points
+x <- seq(0, 1, 10^-2)
+
+fx <- function(x) sin(pi * x)^2
+
+plot(fx, xlim = c(0,1), ylim = c(0,1.5), ylab = "f(x)", lwd = 2)
+curve(dunif, add = TRUE, col = "blue", lwd = 2)
+curve(dbeta(x,2,2), add = TRUE, col = "red", lwd = 2)
+curve(dnorm(x, mean = 0.5, 0.4), add = TRUE, col = "green", lwd = 2)
+legend("bottom", legend = c(expression(paste("sin(",pi,"x)"^"2")),"Unif(0,1)",
+"Beta(2,2)"), col = c("black", "blue", "red"), lty = c(1,1,1), bty = "n", cex = 1.1, lwd = 2)
+
+sim_fun <- function(f, envelope = "unif", par1 = 0, par2 = 1, n = 10^2, plot = TRUE){
+  r_envelope <- match.fun(paste0("r", envelope))
+  d_envelope <- match.fun(paste0("d", envelope))
+  proposal <- r_envelope(n, par1, par2)
+  density_ratio <- f(proposal) / d_envelope(proposal, par1, par2)
+  samples <- proposal[runif(n) < density_ratio]
+  acceptance_ratio <- length(samples) / n
+  if (plot) {
+    hist(samples, probability = TRUE, 
+         main = paste0("Histogram of ", 
+                       n, " samples from ", 
+                       envelope, "(", par1, ",", par2,
+                       ").\n Acceptance ratio: ",
+                       round(acceptance_ratio,2)), 
+                       cex.main = 0.75)
+  }
+  list(x = samples, acceptance_ratio = acceptance_ratio)
+}
+
+par(mfrow = c(2,2), mar = rep(4, 4))
+
+unif_1 <- sim_fun(fx, envelope = "unif", par1 = 0, par2 = 1, n = 10^2) 
+unif_2 <- sim_fun(fx, envelope = "unif", par1 = 0, par2 = 1, n = 10^5)
+
+# Add in the Beta(2,2) Histograms
+beta_1 <- sim_fun(fx, envelop = "beta", par1 = 2, par2 =2, n = 10^2)
+beta_2 <- sim_fun(fx, envelop = "beta", par1 = 2, par2 =2, n = 10^5)
+
+norm_1 <- sim_fun(fx, envelop = "norm", par1 = .5, par2 =.4, n = 10^2)
+norm_2 <- sim_fun(fx, envelop = "norm", par1 = .5, par2 =.4, n = 10^5)
+
+par(mfrow = c(1,1))
+```
+  
+From the histograms above, we can see that the more samples taken, the distribution of the acceptance ratios of our distributions look more normal with a mean value around 0.5. There is more variance with the 100 sample histograms; the average acceptance ratio of the samples vary more with the uniform having a slightly higher or lower ratio compared to the beta each time you run the code above. However, even with more variance,the average acceptance ratio of the 100 samples still is close to the value of 0.5. 
+
+b. Task 5
+As discussed in task 4, the two distributions are about the same when it comes to enveloping f(x). An acceptance ratio of 0.5 is not great and can be costly if you were to run many more samples as only half of the values will be accepted. 

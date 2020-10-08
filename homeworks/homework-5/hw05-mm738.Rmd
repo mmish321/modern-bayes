@@ -2,7 +2,7 @@
 title: 'Homework 5'
 author: "STA 360: Assignment 5, Fall 2020"
 date: "Due Friday September 18, 5 PM Standard Eastern Time"
-output: html_document
+output: pdf_document
 ---
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)

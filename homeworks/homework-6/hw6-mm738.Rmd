@@ -10,8 +10,7 @@ output: pdf_document
 
 Part 1
 
-1. 
-The below code was taken from Professors Rebecca C. Steort's provided template code.
+All the code below was taken from Professors Rebecca C. Steort's provided template code.
 
 ```{r part1}
 knitr::opts_chunk$set(cache=TRUE)
@@ -69,6 +68,9 @@ init.missing <- rgamma(length(c), shape = r, rate = init.theta)
 res <- sampleGibbs(z, c, n.iter, init.theta, init.missing, r, a, b)
 # get running averages
 run.avg <- apply(res, 2, cumsum)/(1:n.iter)
+
+```
+```{r fig:trace-theta, fig.width=5,fig.height=4,fig.cap="\\label{fig:trace-z}Traceplot of $z_3, z_8, z_9, z_{10}, z_{12}.$"}
 #Create Traceplot for Theta
 plot(1:n.iter, res[,1], pch = 16, cex = .35,
      xlab = "Iteration", ylab = expression(theta),
@@ -92,7 +94,7 @@ plot.new()
 #Create Running Average Plot for Theta
 plot(1:n.iter, run.avg[,1], type = "l",
      xlab = "Iteration", ylab = expression(theta),
-     main = expression(paste("Running Average Plot of ", theta, " for 10,000 iterations")))
+     main = expression(paste("Running Average Plot of ", theta, " for 200 Iterations")))
 ```
 
 ```{r fig:run-z, fig.width=7,fig.height=6,fig.cap="\\label{fig:run-z}Running average plots of $z_3, z_8, z_9, z_{10}, z_{12}.$"}
@@ -110,7 +112,8 @@ plot.new()
 
 From the plots above, we can see that the plots show clear variation among values which means the sampler is having mixing issues. If you look at the traceplots, there's very visible variation in the values for theta and z3, 8,9,10,12 and the running average plots don't appear to be steady (like a straight line), instead we can see bumps and obvious variation. This means we have not ran our sampler long enough.
                  
-2.  
+Part 2
+
 ```{r 10,000 iterations} 
 n.iter2 <- 10000
 init.missing2 <- rgamma(length(c), shape = r, rate = init.theta)
@@ -162,7 +165,8 @@ plot.new()
 
 From the plots above, we see a significant improvement from the 200 iterations plots. We can see that in the traceplot for theta, that the majority of the datapoints take on values between 3.0-3.5. The plot looks like it's centered around 3.25 approximately. The same can be said about the traceplots for z3, 8, 9, 10, and 12 where you can now see a heavy concentration of points around certain values with the majority of z3 being between 3.0-3.5, z8 being between 2-3.5, z9, 10 and 12 being between 2-4.  The running average plots look far more steady (like a straight line). With these plots, it seems like we have run our sampler enough but we still don't know whether the chain has converged for sure.
 
-3.  
+Part 3
+
 ```{r fig:density-theta,fig.width=7,fig.height=6,fig.cap="\\label{fig:density-theta}Estimated posterior density of theta"}
 # density plots
 plot(density(res2[,1]), xlab = expression(theta), 
@@ -179,12 +183,11 @@ abline(v = mean(res2[,4]), col = "red")
   
     
       
-From the density plot of theta, we can see that the rate parameter for the life time distribution is around 3. This means the average life expectancy (r/theta with r being 10) is around 3 years (10/3) and the variance (r/theta^2) being around 1 (10/9).
-
-For the density plot of z9, we can see the the value of z9 with the highest density is around 3. This means, we predict that patient 9 who lived at least 2 years after the operation, most likely, to have made it to 3 years. Because we don't know what actually happened to patient 2, we use our latent variable z9 to impute a value instead. And the density plot of z9 reveals that a value around 3 is far more likely than values such as 6 or 8. 
+From the density plot of theta, we can see that the rate parameter for the life time distribution is around 3.25. This means the average life expectancy (r/theta with r being 10) is around 3 years (10/3.25) and the variance (r/theta^2) being around 1 (10/10.5625).
+For the density plot of z9, we can see the the value of z9 with the highest density is around 3. This means, we predict that patient 9 who lived at least 2 years after the operation, most likely, to have made it to 3 years. Because we don't know what actually happened to patient 2, we use our latent variable z9 to impute a value instead. And the density plot of z9 reveals that a value around 3 is far more likely than values such as 6 or 8 years. 
      
 
-4.
+Part 4
 
 ```{r new-value-b}
 b2 <- 100
@@ -223,4 +226,4 @@ abline(v = mean(res4[,4]), col = "red")
 ```
 When b (or the rate of our prior) is increased, we can see that the mean value of theta (the rate used in our truncated gamma) decreases to around a value of 0.6. When the rate decreases for the truncated gamma, we can see that the mean value of z9 increases to around 17.
 When you increase the value of a or the shape of our prior on theta, we see that the mean value of theta increases to around 7. When the rate increases for the truncated gamma, we see the mean value for z9 decrease to around 2.2.
-By changing a,b which in turn changes the value of theta, which is used to produce our truncated gamma we sample from for our censored values, our imputed values are affected.
+By changing a,b which in turn changes the value of theta, which is used to produce our truncated gamma we sample from for our censored values, our imputed values are affected. 

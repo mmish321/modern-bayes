@@ -134,6 +134,9 @@ cor.df = data.frame(species = c(rep('blue', length(crab.mcmc$blue_crab$corr)), r
 
 ggplot(cor.df, aes(x = cor, fill = species)) +
   geom_density(alpha = 0.5) +
+  labs(x = "Correlation Coefficient",
+       y = "Density") +
+  ggtitle("Posterior Densities of the correlations of Blue and Orange")+ 
   scale_fill_manual(values = c('blue', 'orange'))
 
 mean(crab.mcmc$blue_crab$corr< crab.mcmc$orange_crab$corr)

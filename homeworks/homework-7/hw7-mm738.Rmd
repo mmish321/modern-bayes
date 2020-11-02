@@ -1,0 +1,141 @@
+
+---
+title: 'Homework 7'
+author: "STA 360: Assignment 7, Fall 2020"
+date: "Due Monday November 2nd, 5 PM Standard Eastern Time"
+output: pdf_document
+---
+
+# Question 1
+```{r load-in-libraries, echo=FALSE, message=FALSE}
+knitr::opts_chunk$set(fig.align = 'center', message = FALSE)
+library(knitr)
+library(ggplot2)
+library(cowplot)
+library(reshape)
+library (mvtnorm)
+library(MCMCpack)
+```
+Hoff 7. 3
+
+Part A.
+```{r cache=TRUE}
+#Read in the data sets from github
+blue_crab_data = as.matrix(read.table(url('https://raw.githubusercontent.com/resteorts/modern-bayes/master/homeworks/homework-7/data/bluecrab.dat')))
+
+orange_crab_data = as.matrix(read.table(url('https://raw.githubusercontent.com/resteorts/modern-bayes/master/homeworks/homework-7/data/orangecrab.dat')))
+
+#We need to sample from the posterior for both data sets, so let's use lapply with a function
+#The function is heavily based on Rebecca Steort's code in Module 8
+crab.mcmc = lapply(list('blue_crab' = blue_crab_data, 'orange_crab' = orange_crab_data), function(crab) {
+   n = nrow(crab)
+   # Set prior parameters according to problem
+  mu0 = colMeans(crab)
+  lambda0 = cov(crab)
+  s0 = cov(crab)
+  nu0 = 4
+  THETA <- SIGMA <-CORR <-NULL
+  # Start with sigma sample
+  sigma = s0
+  set.seed(1);
+  for (s in 1:10000) {
+    # Update theta
+    Ln <- solve(solve(lambda0) + n * solve(sigma))
+    mun <- Ln %*% (solve(lambda0) %*% mu0 + n * solve(sigma) %*% mu0)
+    theta <- rmvnorm(1, mun, Ln)
+    
+    ## update sigma
+    Sn <- s0 + (t(crab) - c(theta)) %*%       t(t(crab)-c(theta))
+    sigma <- solve(rwish(nu0 + n, solve(Sn)))
+    
+    #Correlation Coefficient 
+    corr <-sigma[2]/(sqrt(sigma[1] * sigma[4]))
+    
+    ## save results
+    THETA <- rbind(THETA, theta)
+    SIGMA <- rbind(SIGMA, c(sigma))
+    CORR <-rbind(CORR, corr)
+  }
+  
+  list(theta = THETA, sigma = SIGMA, corr = CORR)
+})
+```
+
+Part B.
+
+```{r, traceplots, echo=FALSE}
+#Create Traceplots for Theta 1 and 2 for Orange and Blue
+n.iter<-10000
+plot(1:n.iter, crab.mcmc$blue_crab$theta[,1], pch = 16, cex = .35,
+     xlab = "Iteration", ylab = expression(theta),
+     main = expression(paste("Traceplot of ", theta, "1 for Blue Crab")))
+
+
+n.iter<-10000
+plot(1:n.iter, crab.mcmc$blue_crab$theta[,2], pch = 16, cex = .35,
+     xlab = "Iteration", ylab = expression(theta),
+     main = expression(paste("Traceplot of ", theta, "2 for Blue Crab")))
+
+n.iter<-10000
+plot(1:n.iter, crab.mcmc$orange_crab$theta[,1], pch = 16, cex = .35,
+     xlab = "Iteration", ylab = expression(theta),
+     main = expression(paste("Traceplot of ", theta, "1 for Orange Crab")))
+
+n.iter<-10000
+plot(1:n.iter, crab.mcmc$orange_crab$theta[,2], pch = 16, cex = .35,
+     xlab = "Iteration", ylab = expression(theta),
+     main = expression(paste("Traceplot of ", theta, "2 for Orange Crab")))
+```
+
+```{r,running-average-plots, echo=FALSE}
+run.avg <- apply(crab.mcmc$blue_crab$theta, 2, cumsum)/(1:n.iter)
+plot(1:n.iter, run.avg[,1], type = "l",
+     xlab = "Iteration", ylab = expression(theta),
+     main = expression(paste("Running Average Plot of ", theta, "1 for Blue Crab")))
+
+plot(1:n.iter, run.avg[,2], type = "l",
+     xlab = "Iteration", ylab = expression(theta),
+     main = expression(paste("Running Average Plot of ", theta, "2 for Blue Crab")))
+
+run.avg2 <- apply(crab.mcmc$orange_crab$theta, 2, cumsum)/(1:n.iter)
+plot(1:n.iter, run.avg2[,1], type = "l",
+     xlab = "Iteration", ylab = expression(theta),
+     main = expression(paste("Running Average Plot of ", theta, "1 for Orange Crab")))
+
+plot(1:n.iter, run.avg2[,2], type = "l",
+     xlab = "Iteration", ylab = expression(theta),
+     main = expression(paste("Running Average Plot of ", theta, "2 for Orange Crab")))
+```
+
+```{r estimated-density-plots, echo=FALSE}
+plot(density(crab.mcmc$blue_crab$theta[,1]), xlab = expression(theta), 
+     main = expression(paste("Density of ", theta,"1 for Blue Crab")))
+abline(v = mean(crab.mcmc$blue_crab$theta[,1]), col = "red")
+
+plot(density(crab.mcmc$blue_crab$theta[,2]), xlab = expression(theta), 
+     main = expression(paste("Density of ", theta, "2 for Blue Crab")))
+abline(v = mean(crab.mcmc$blue_crab$theta[,2]), col = "red")
+
+plot(density(crab.mcmc$orange_crab$theta[,1]), xlab = expression(theta), 
+     main = expression(paste("Density of ", theta,"1 for Orange Crab")))
+abline(v = mean(crab.mcmc$orange_crab$theta[,1]), col = "red")
+
+plot(density(crab.mcmc$orange_crab$theta[,2]), xlab = expression(theta), 
+     main = expression(paste("Density of ", theta, "2 for Orange Crab")))
+abline(v = mean(crab.mcmc$orange_crab$theta[,2]), col = "red")
+```
+
+From the plots above, we can see that the chain has seemingly not failed to converge. And we can see that for body width and for rear width, the orange crabs seem to be bigger. The density and running average plots both reveal, that the orange crabs have larger values for body with and rear width.
+
+Part C.
+```{r covariance}
+cor.df = data.frame(species = c(rep('blue', length(crab.mcmc$blue_crab$corr)), rep('orange', length(crab.mcmc$orange_crab$corr))),
+    cor = c(crab.mcmc$blue_crab$corr, crab.mcmc$orange_crab$corr))
+
+ggplot(cor.df, aes(x = cor, fill = species)) +
+  geom_density(alpha = 0.5) +
+  scale_fill_manual(values = c('blue', 'orange'))
+
+mean(crab.mcmc$blue_crab$corr< crab.mcmc$orange_crab$corr)
+```
+

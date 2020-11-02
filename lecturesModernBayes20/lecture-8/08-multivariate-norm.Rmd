@@ -967,7 +967,7 @@ Initialize $(a,b)$ to $(a_0, b_0).$
 
 Draw $a$ from $a \mid b=b_0,x$
 
-Draw $b$ from $a \mid a=a_1,x$
+Draw $b$ from $b \mid a=a_1,x$
 
 in order to get $(a_1,b_1).$
 
@@ -975,7 +975,7 @@ in order to get $(a_1,b_1).$
 
 Draw $a$ from $a \mid b=b_1,x$
 
-Draw $b$ from $a \mid a=a_2,x$
+Draw $b$ from $b \mid a=a_2,x$
 
 in order to get $(a_2,b_2).$
 
@@ -983,7 +983,7 @@ M. For the $M$th iteration of the Gibbs sampler,
 
 Draw $a$ from $a \mid b=b_{M-1},x$
 
-Draw $b$ from $a \mid a=a_{M},x$
+Draw $b$ from $b \mid a=a_{M},x$
 
 in order to get $(a_M,b_M).$
 
